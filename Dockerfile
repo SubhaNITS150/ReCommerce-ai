@@ -2,23 +2,19 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONTONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Install system dependencies required for OpenCV and YOLO inference
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Added an automatic retry loop for network resilience against exit code 100
+RUN for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libgl1-mesa-glx \
-    libgomp1 \
+    libgomp1 && break || sleep 5; done \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first to leverage Docker cache layers
 COPY requirements.txt .
-
-# Install your Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your application code
 COPY . .
 
 EXPOSE 8000
