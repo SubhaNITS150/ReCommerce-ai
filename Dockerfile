@@ -11,21 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY requirements.txt constraints.txt ./
 
-# Step 1: install everything except ultralytics first
-RUN pip install --no-cache-dir \
-    fastapi==0.116.1 \
-    uvicorn==0.35.0 \
-    python-multipart==0.0.20 \
-    opencv-python-headless
-
-# Step 2: install ultralytics — it may try to pull opencv-python (GUI), we fix that next
-RUN pip install --no-cache-dir ultralytics==8.3.190
-
-# Step 3: force remove GUI opencv and re-install headless
-RUN pip uninstall -y opencv-python opencv-contrib-python 2>/dev/null || true && \
-    pip install --no-cache-dir opencv-python-headless
+# PIP_CONSTRAINT blocks ultralytics from ever pulling in opencv-python (GUI)
+RUN PIP_CONSTRAINT=constraints.txt pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
