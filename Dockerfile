@@ -5,20 +5,15 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-RUN for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libgl1-mesa-glx \
     libgomp1 \
-    libxcb1 \
-    libxext6 \
-    libx11-6 \
-    libglib2.0-dev \
-    libsm6 \
-    libxrender1 && break || sleep 5; done \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip uninstall -y opencv-python opencv-contrib-python 2>/dev/null || true
 
 COPY . .
 
