@@ -9,10 +9,7 @@ app = FastAPI(
 )
 
 # 🛠️ Define the permitted origins for CORS configuration
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+origins = ["*"]
 
 # 🔓 Enable CORSMiddleware down the app chain
 app.add_middleware(
