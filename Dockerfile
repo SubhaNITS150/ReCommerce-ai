@@ -2,14 +2,19 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-ENV PYTHONTONTWRITEBYTECODE=1
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Added an automatic retry loop for network resilience against exit code 100
 RUN for i in {1..3}; do apt-get update && apt-get install -y --no-install-recommends \
     libglib2.0-0 \
     libgl1-mesa-glx \
-    libgomp1 && break || sleep 5; done \
+    libgomp1 \
+    libxcb1 \
+    libxext6 \
+    libx11-6 \
+    libglib2.0-dev \
+    libsm6 \
+    libxrender1 && break || sleep 5; done \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
