@@ -11,10 +11,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt constraints.txt ./
+COPY requirements.txt .
 
-# PIP_CONSTRAINT blocks ultralytics from ever pulling in opencv-python (GUI)
-RUN PIP_CONSTRAINT=constraints.txt pip install --no-cache-dir -r requirements.txt
+# Install ultralytics and all deps first
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Now forcibly replace opencv-python with headless using --ignore-installed
+# This overwrites whatever opencv variant ultralytics pulled in
+RUN pip install --no-cache-dir --ignore-installed opencv-python-headless
 
 COPY . .
 
