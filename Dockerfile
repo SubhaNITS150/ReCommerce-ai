@@ -13,12 +13,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 
-# Install ultralytics and all deps first
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Now forcibly replace opencv-python with headless using --ignore-installed
-# This overwrites whatever opencv variant ultralytics pulled in
 RUN pip install --no-cache-dir --ignore-installed opencv-python-headless
+
+# Create uploads directory
+RUN mkdir -p app/uploads
 
 COPY . .
 
